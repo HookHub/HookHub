@@ -6,9 +6,9 @@ var cookieParser = require('cookie-parser');
 var bodyParser = require('body-parser');
 var debug = require('debug')('hookhub:app');
 
-var index = require('./routes/index');
+var hooks = require('express-middleware-module-loader')('./modules/');
 
-var hooks = require('express-middleware-module-loader')('./hooks/');
+var index = require('./routes/index')(hooks);
 
 var app = express();
 

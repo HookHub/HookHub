@@ -1,9 +1,13 @@
 var express = require('express');
 var router = express.Router();
 
-/* GET home page. */
-router.get('/', function(req, res, next) {
-  res.render('index', { title: 'HookHub', hooks: {} });
-});
+function loadIndex(hooksHandler) {
+  /* GET home page. */
+  router.get('/', function(req, res, next) {
+    res.render('index', { title: 'HookHub', hooks: hooksHandler.getModulesList() });
+  });
 
-module.exports = router;
+  return router;
+}
+
+module.exports = loadIndex;
