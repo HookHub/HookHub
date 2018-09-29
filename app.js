@@ -19,7 +19,16 @@ app.set('view engine', 'pug');
 // uncomment after placing your favicon in /public
 //app.use(favicon(path.join(__dirname, 'public', 'favicon.ico')));
 app.use(logger('dev'));
-app.use(bodyParser.json());
+
+// Intercept req.rawBody
+app.use(bodyParser.json({
+  verify: function (req, res, buf, encoding) {
+    // get rawBody        
+    req.rawBody = buf.toString(encoding);
+
+    console.log("rawBody:", req.rawBody);
+  }
+}));
 app.use(bodyParser.urlencoded({
   extended: false
 }));
@@ -34,10 +43,12 @@ app.get('/dump', function (req, res, next) {
   debug("Registered routes:");
   debug("========================================");
   app._router.stack.forEach(function (r) {
-      debug("r:", r);
+    debug("r:", r);
   });
   debug("========================================");
-  res.send({result:"OK"});
+  res.send({
+    result: "OK"
+  });
 });
 
 // catch 404 and forward to error handler
