@@ -11,4 +11,4 @@ CMD ["bin/www"]
 
 # Build the image
 COPY . /app
-RUN cd /app && bin/build_prod.sh
+RUN cd /app && scripts/build_prod.sh

@@ -7,8 +7,8 @@ cd "$BASEDIR"
 echo "Installing Node modules"
 npm install --production
 
-find modules/* -maxdepth 1 | while read MODULE_DIR
+find hooks/* -maxdepth 1 -type d | while read HOOK_DIR
 do
-    echo "Installing Node modules for $MODULE_DIR"
-    ( cd "$MODULE_DIR" ; npm install --production )
+    echo "Installing Node modules for $HOOK_DIR"
+    ( cd "$HOOK_DIR" ; npm install --production )
 done
