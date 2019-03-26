@@ -1,7 +1,5 @@
 #!/bin/bash -x
 
-export DEBUG='hookhub:*'
-
 cd /app
 
 if [ "$HOOKHUB_BOOTSTRAP_MODULE" = "" ] ; then

@@ -12,4 +12,4 @@ ENV DEBIAN_FRONTEND noninteractive
 # Build the image
 RUN apt update && apt upgrade -y && apt install git
 COPY . /app
-RUN cd /app && npm install
+RUN cd /app && npm install --production
