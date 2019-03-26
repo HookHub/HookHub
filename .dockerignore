@@ -1,4 +1,12 @@
-hooks/*
+hooks/
 config.json
 hookhub.json
-hookhub.ymlattic
+hookhub.yml
+attic
+.yml
+t.
+test
+node_modules
+nodemon.json
+LICENSE
+README.md
