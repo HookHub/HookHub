@@ -1,0 +1,5 @@
+url: 'https://raw.githubusercontent.com/org/repo/'
+username: username
+password: password
+headers:
+  API-Key: SomeAPIKeyExample

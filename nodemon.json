@@ -8,7 +8,10 @@
     "tools/**",
     "tools/**/**",
     "t.js",
-    "t?.js"
+    "t?.js",
+    "package.json",
+    "package-lock.json",
+    "node_modules/**"
   ],
   "verbose": true,
   "events": {
@@ -16,11 +19,7 @@
   },
   "watch": [
     ".",
-    "bin/www",
-    "lambdas/*",
-    "lambdas/*.js",
-    "lambdas/*.json",
-    "lambdas/*/*.js"
+    "bin/www"
   ],
   "env": {
     "NODE_ENV": "development"

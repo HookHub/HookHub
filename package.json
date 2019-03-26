@@ -1,20 +1,28 @@
 {
-  "name": "HookHub",
-  "version": "0.0.0",
+  "name": "hookhub",
+  "version": "1.0.0",
   "private": true,
   "scripts": {
     "start": "node ./bin/www",
-    "dev": "DEBUG='*' nodemon bin/www"
+    "dev": "DEBUG='hookhub:*' node_modules/.bin/nodemon bin/www"
   },
   "dependencies": {
     "body-parser": "^1.18.3",
-    "cookie-parser": "~1.4.3",
-    "debug": "^4.0.1",
-    "dotenv": "^6.0.0",
-    "express": "^4.16.3",
-    "express-middleware-module-loader": "^0.2.0",
+    "cookie-parser": "^1.4.4",
+    "debug": "^4.1.1",
+    "express": "^4.16.4",
+    "hookhub-bootstrap-local": "git+https://github.com/hookhub/hookhub-bootstrap-local.git",
+    "hookhub-doc": "git+https://github.com/HookHub/hookhub-doc.git",
+    "hookhub-github-webhook-in": "git+https://github.com/hookhub/hookhub-github-webhook-in.git",
+    "hookhub-hook-dump": "git+https://github.com/HookHub/hookhub-hook-dump.git",
+    "hookhub-hook-ping": "git+https://github.com/HookHub/hookhub-hook-ping.git",
+    "is-installed": "^2.0.1",
     "morgan": "^1.9.1",
+    "npm": "^6.9.0",
     "pug": "^2.0.3",
     "serve-favicon": "^2.5.0"
+  },
+  "devDependencies": {
+    "nodemon": "^1.18.10"
   }
 }

@@ -1,0 +1,37 @@
+plugins:
+  dump: "https://github.com/HookHub/hookhub-dump.git"
+  ping: "https://github.com/HookHub/hookhub-ping.git"
+  github-in: "https://github.com/hookhub/hookhub-github-webhook-in.git"
+  slack-out: "https://github.com/hookhub/hookhub-slack-webhook-out.git"
+credentials:
+  some-github-webhook:
+    secret: SOMERANDOMSTRING
+  company-slack:
+    url: >-
+      https://hooks.slack.com/services/PART1/PART2/PART3
+resources:
+  dump:
+    plugin: dump
+  ping:
+    plugin: ping
+  github-webhook1:
+    plugin: github-in
+    credential: some-github-webhook
+  company-developer-slack:
+    plugin: slack-out
+    credential: company-slack
+    options:
+      username: HookHub
+      icon_emoji: ":robot_face:"
+      channel: "#developers"
+hooks:
+  dump:
+    pipeline:
+      - dump
+  ping:
+    pipeline:
+      - ping
+  github-slack-devs:
+    pipeline:
+      - github-webhook1
+      - company-developer-slack
