@@ -26,12 +26,9 @@ resources:
       channel: "#developers"
 hooks:
   dump:
-    pipeline:
-      - dump
+    - dump
   ping:
-    pipeline:
-      - ping
+    - ping
   github-slack-devs:
-    pipeline:
-      - github-webhook1
-      - company-developer-slack
+    - github-webhook1
+    - company-developer-slack
