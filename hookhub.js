@@ -186,3 +186,4 @@ async function installModule (moduleSrc) {
 
 module.exports.init = init
 module.exports.hooks = router
+module.exports.getHooks = getHooks
