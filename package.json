@@ -3,8 +3,10 @@
   "version": "1.0.0",
   "private": true,
   "scripts": {
-    "start": "node ./bin/www",
-    "dev": "DEBUG='hookhub:*' node_modules/.bin/nodemon bin/www"
+    "dev": "DEBUG='hookhub:*' bin/www",
+    "dev-test": "scripts/devtest.sh",
+    "reset": "scripts/devreset.sh",
+    "start": "node ./bin/www"
   },
   "dependencies": {
     "body-parser": "^1.18.3",

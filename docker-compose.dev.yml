@@ -1,0 +1,11 @@
+version: "3.3"
+services:
+  node:
+    build:
+      context: .
+      dockerfile: Dockerfile.dev
+    environment:
+      - VIRTUAL_HOST=hookhub.test
+      - DEBUG=hookhub:*
+    volumes:
+    - ./:/app/
