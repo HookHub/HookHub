@@ -81,7 +81,7 @@ credentials:
 
 #### Resources
 
-Resources are the building blocks of Hookhub. Resources can be stacked to fullfill `hooks`.
+Resources are the building blocks of Hookhub. Resources can be stacked to fullfill `hooks`, but to ensure configurability and re-use, they are configured as `resources`
 
 Example:
 ```
@@ -102,9 +102,11 @@ resources:
       channel: "#developers"
 ```
 
-In the example, the `company-developer-slack` has a specific configuration. If the `#teamleads` channel would also need to receive this information, the following example could be added:
+In the example above, the `company-developer-slack` has a specific configuration. If the `#teamleads` channel would also need to receive information, the following example could be added:
 
 ```
+resources:
+  ...
   company-teamleads-slack:
     plugin: slack-out
     credential: company-slack
@@ -118,7 +120,7 @@ In the example, the `company-developer-slack` has a specific configuration. If t
 
 The `hooks` section connects the different endpoints to the `resources`.
 
-In the example below, the `github-slack-devs` hooks connects the `github-webhook1` and the `company-developer-slack` `resources` to the `github-slack-devs` path.
+In the example below, the `github-slack-devs` hooks connects the `github-webhook1` and the `company-developer-slack` `resources` to the `github-slack-devs` endpoint. This `hook` could then be configured on GitHub to notify the `company-developer-slack` channel of any or specific updates.
 
 Example:
 ```
@@ -144,3 +146,25 @@ hooks:
     - github-webhook1
     - company-teamleads-slack
 ```
+
+It would also be possible to notify the `#devops` channel of new builds:
+
+```
+...
+resources:
+  ...
+  company-devops-slack:
+    plugin: slack-out
+    credential: company-slack
+    options:
+      username: HookHub
+      icon_emoji: ":robot_face:"
+      channel: "#devops"
+hooks:
+  ...
+  github-slack-devops:
+    - github-webhook1
+    - company-devops-slack
+```
+
+In this example, this `github-slack-devops` hook could be configured to only receive updates for releases or builds.
