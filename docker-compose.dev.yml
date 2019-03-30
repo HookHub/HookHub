@@ -5,7 +5,10 @@ services:
       context: .
       dockerfile: Dockerfile.dev
     environment:
+      - HOOKHUB_BOOTSTRAP_MODULE=hookhub-bootstrap-local
+      - HOOKHUB_BOOTSTRAP_SOURCE=/app/bundle/hookhub-bootstrap-local.tgz
       - VIRTUAL_HOST=hookhub.test
       - DEBUG=hookhub:*
+      - NODE_ENV=development
     volumes:
     - ./:/app/
