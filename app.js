@@ -1,3 +1,4 @@
+const { getLine } = require('./lib/utils')
 const express = require('express')
 const path = require('path')
 // const favicon = require('serve-favicon')
@@ -6,7 +7,6 @@ const cookieParser = require('cookie-parser')
 const bodyParser = require('body-parser')
 const debug = require('debug')('hookhub:app')
 const app = express()
-const { getLine } = require('./lib/utils')
 
 var hookhub = require('./hookhub')
 var index = require('./routes/index')(hookhub)
@@ -69,8 +69,11 @@ app.use(function (err, req, res, next) {
 module.exports = app
 
 async function loadHookhub () {
-  let initResult = await hookhub.init()
-  if (!initResult) throw new Error('Fatal Hookhub init error')
-  debug(getLine(), 'Hookhub Initialized')
-  return initResult
+  try {
+    let initResult = await hookhub.init()
+    debug(getLine(), 'Hookhub Initialized')
+    return initResult
+  } catch (initError) {
+    console.warn('Fatal Hookhub init error: ' + initError)
+  }
 }
