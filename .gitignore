@@ -1,4 +1,5 @@
 attic/
+bundle/*
 hookhub.yml
 node_modules/
 reset.sh
