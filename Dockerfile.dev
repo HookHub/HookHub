@@ -3,7 +3,7 @@ FROM node:carbon
 # Set up the environment
 WORKDIR /app
 ENTRYPOINT ["/app/scripts/docker_dev_entrypoint.sh"]
-CMD ["bin/www"]
+CMD ["node","--stack-trace-limit=1000","--stack-size=1024","bin/www"]
 EXPOSE 3000
 
 # General housekeeping
