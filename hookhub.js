@@ -1,9 +1,8 @@
+const { getLine, isInstalled } = require('./lib/utils')
 const debug = require('debug')('hookhub:bootstrap')
 const express = require('express')
 const router = express.Router()
 const npm = require('npm')
-const isInstalled = require('is-installed')
-const { getLine } = require('./lib/utils')
 const fs = require('fs')
 
 var bootstrap
@@ -13,10 +12,6 @@ var resourceCache = {}
 if (typeof process.env.HOOKHUB_BOOTSTRAP_MODULE === 'undefined') {
   throw new Error('Missing HOOKHUB_BOOTSTRAP_MODULE')
 }
-
-router.get('/', function (req, res, next) {
-  if (!res.hookhub) res.hookhub = {}
-})
 
 async function init () {
   debug(getLine(), 'init', 'Setting up...')
@@ -62,28 +57,95 @@ async function init () {
     }
   })
   debug(getLine(), 'init', 'Resources loaded:', Object.keys(resourceCache).length)
+
   debug(getLine(), 'init', 'Loading hooks')
+
   let hooks = getHooks()
+
   debug(getLine(), 'init', 'Loading hooks:', Object.keys(hooks))
   Object.keys(hooks).forEach(function (hook) {
     debug(getLine(), 'init', 'Plugging hook:', hook)
+
     let hookConfig = hooks[hook]
     let hookPath = '/' + hook + '/'
+
     debug(getLine(), 'init', 'Trying hook', hookPath, 'with', hookConfig)
     try {
+      let primaryHookHandlers = []
+      primaryHookHandlers.push(hookhubResLocals)
+
       hookConfig.forEach(function (hookElement) {
-        debug(getLine(), 'init', 'Plugging', hookElement, 'for hook', hook)
-        let hookResult = router.use(hookPath, resourceCache[hookElement])
-        if (!hookResult) throw new Error('Error plugging ' + hookElement + ' for hook ' + hook)
-        debug(getLine(), 'init', 'Hook', hook, 'loaded hookElement:', hookElement)
+        debug(getLine(), 'init', hookPath, 'adding hookElement', hookElement)
+        primaryHookHandlers.push(resourceCache[hookElement])
       })
+
+      primaryHookHandlers.push(hookResultHandler(getLine(), hookPath))
+      var hookElementErrorHandler = hookErrorHandler(getLine(), hookPath)
+      primaryHookHandlers.push(hookElementErrorHandler)
+
+      debug(getLine(), 'init', 'Plugging', hookPath, 'with hookHandlers', primaryHookHandlers)
+
+      let hookResult = router.use(hookPath, primaryHookHandlers)
+      if (!hookResult) throw new Error('Error plugging ' + hookConfig + ' for hook ' + hook)
+      debug(getLine(), 'init', 'hookResult', hookResult)
+
+      // Install additional catch-all route to skip to for error handling
+      debug(getLine(), 'init', 'Plugging hookResultHandler fallback for', hookPath)
+      if (!router.all(hookPath, hookResultHandler(getLine(), hookPath))) throw new Error('Error plugging catchAll for hook ' + hook + ' [' + hookResultHandler)
+
+      debug(getLine(), 'init', 'Hook', hookPath, 'successfully plugged')
     } catch (installHookError) {
-      throw new Error('Failed to install hook ' + hook)
+      throw new Error('Failed to install hook ' + hook + ': ' + installHookError)
     }
-    debug(getLine(), 'init', 'Hooks loaded')
   })
+  debug(getLine(), 'init', 'Hooks loaded')
 
   return true
+}
+
+//
+// Route Functions
+//
+// Set transient hookhub object
+function hookhubResLocals (req, res, next) {
+  debug(getLine(), 'hookhubResLocals', 'Initialize res.locals.hookhub')
+  if (!res.locals.hookhub) {
+    res.locals.hookhub = {
+      doc: {},
+      result: {
+        result: 'ERROR',
+        message: 'Unknown status message'
+      },
+      stack: [],
+      statusCode: 0
+    }
+  }
+  next()
+}
+
+function hookErrorHandler (logLine, logHookPath) {
+  return function (err, req, res, next) {
+    res.locals.hookhub.stack.push('hookErrorHandler')
+    if (res.locals.hookhub.statusCode === 0) res.locals.hookhub.statusCode = 503
+    debug(logLine, 'exec', 'failed to execute', logHookPath, 'with error:')
+    debug(logLine, err)
+    next('route')
+  }
+}
+
+// Catch all route to send the results
+function hookResultHandler (logLine, logHookPath) {
+  return function (req, res, next) {
+    res.locals.hookhub.stack.push('hookResultHandler')
+    debug(logLine, 'hookResultHandler', logHookPath, 'result:')
+    debug(logLine, 'hookResultHandler', res.locals.hookhub)
+
+    if (res.locals.hookhub.statusCode !== 0) {
+      res.status(res.locals.hookhub.statusCode).send(res.locals.hookhub.result).end()
+    } else {
+      res.send(res.locals.hookhub.result).end()
+    }
+  }
 }
 
 // eslint-disable-next-line no-unused-vars
@@ -106,7 +168,7 @@ function getResources () {
 async function installBootstrap () {
   let bootstrapModulePath = process.env.HOOKHUB_BOOTSTRAP_MODULE
   debug(getLine(), 'installBootstrap')
-  if (!isInstalled.sync(process.env.HOOKHUB_BOOTSTRAP_MODULE)) {
+  if (!isInstalled(process.env.HOOKHUB_BOOTSTRAP_MODULE)) {
     if (typeof process.env.HOOKHUB_BOOTSTRAP_SOURCE !== 'undefined') {
       debug(getLine(), 'installBootstrap', 'Installing module from source:', process.env.HOOKHUB_BOOTSTRAP_SOURCE)
       bootstrapModulePath = await installModule(process.env.HOOKHUB_BOOTSTRAP_SOURCE)
@@ -141,6 +203,8 @@ async function installModule (moduleSrc) {
       debug(getLine(), 'installModule', moduleSrc, 'npm.load')
       npm.load(function (loadErr) {
         if (loadErr) return reject(new Error(getLine() + ': ' + loadErr))
+
+        debug(getLine(), 'installModule', moduleSrc, 'npm.load', 'loadErr:', loadErr)
 
         npmLoaded = true
 
@@ -183,6 +247,17 @@ async function installModule (moduleSrc) {
   debug(getLine(), 'installModule', 'Returning modulePath', modulePath)
   return modulePath
 }
+
+// Routes
+router.get('/', function (req, res, next) {
+  debug(getLine(), 'route.get', '/', 'Getting index')
+  res.render('index', {
+    title: 'HookHub',
+    hooks: Object.keys(bootstrap.getHooks())
+  })
+})
+
+router.use('/', hookhubResLocals)
 
 module.exports.init = init
 module.exports.hooks = router
