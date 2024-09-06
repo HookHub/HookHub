@@ -1,13 +1,16 @@
-var express = require('express');
-var router = express.Router();
+const express = require('express')
+const router = express.Router()
 
 function loadIndex(hooksHandler) {
   /* GET home page. */
-  router.get('/', function(req, res, next) {
-    res.render('index', { title: 'HookHub', hooks: hooksHandler.getModulesList() });
-  });
+  router.get('/', function (req, res, next) {
+    res.render('index', {
+      title: 'HookHub',
+      hooks: hooksHandler.getModulesList()
+    })
+  })
 
-  return router;
+  return router
 }
 
-module.exports = loadIndex;
+module.exports = loadIndex
