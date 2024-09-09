@@ -1,14 +1,12 @@
 #!/bin/sh
 
-BASEDIR=`dirname $0 | awk '{ print $0 "/.." }'`
-
-cd "$BASEDIR"
+cd "$(dirname "$(realpath "$0")")/../" || exit
 
 echo "Installing Node modules"
-npm install --production
+npm install --omit=dev
 
-find hooks/* -maxdepth 0 -type d | while read HOOK_DIR
+find hooks/* -maxdepth 0 -type d | while read -r HOOK_DIR
 do
     echo "Installing Node modules for $HOOK_DIR"
-    ( cd "$HOOK_DIR" ; npm install --production )
+    ( cd "$HOOK_DIR" || exit ; npm install --omit=dev )
 done

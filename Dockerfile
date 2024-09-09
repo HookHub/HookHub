@@ -1,4 +1,4 @@
-FROM node:carbon
+FROM node:lts
 
 # Set up the environment
 WORKDIR /app
@@ -11,4 +11,5 @@ CMD ["bin/www"]
 
 # Build the image
 COPY . /app
-RUN cd /app && scripts/build_prod.sh
+
+RUN scripts/bootstrap.sh --prod

@@ -1,9 +1,9 @@
-#!/bin/sh
+#!/bin/bash
 
-cd /app
+cd /app || exit
 
-if [ ! -d node_modules ] ; then
-    scripts/build_prod.sh
+if [ ! -d node_modules ]; then
+    scripts/bootstrap.sh --prod
 fi
 
 exec "$@"
